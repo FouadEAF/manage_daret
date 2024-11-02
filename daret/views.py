@@ -232,8 +232,11 @@ class ManageDaretView(APIAccessMixin, APIView):
                 create_notification(
                     user_source=request.user,
                     user_destination=participant.participant,
-                    message=f'The Daret "{daret.name}" has been updated by {
-                        request.user.username}.'
+                    message=(
+                        "The Daret {} has been updated by {}."
+                        .format(daret.name, request.user.username)
+                    )
+
                 )
 
             return Response({'success': True, 'message': 'Daret updated successfully', 'data': DaretSerializer(updated_daret).data}, status=200)
