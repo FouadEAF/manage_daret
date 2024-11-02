@@ -339,8 +339,10 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
                 create_notification(
                     user_source=user,
                     user_destination=daret.owner,
-                    message=f"{user.last_name} {
-                        user.first_name} has requested to join your Daret {daret.name}."
+                    message=(
+                        f"{user.last_name} {
+                            user.first_name} has requested to join your Daret {daret.name}."
+                    )
                 )
 
                 return Response({'success': True, 'message': 'Join request sent, awaiting owner confirmation.'}, status=200)
