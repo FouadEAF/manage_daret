@@ -409,8 +409,11 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
         create_notification(
             user_source=daret.owner,
             user_destination=participant_daret.participant,
-            message=f'Your request was rejected to join the Daret "{
-                daret.name}".'
+            message=(
+                "Your request was rejected to join the Daret {}."
+                .format(daret.name)
+            )
+
         )
 
         return Response({'success': True, 'message': 'Participant removed successfully'}, status=200)
