@@ -382,8 +382,11 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
         create_notification(
             user_source=daret.owner,
             user_destination=participant_daret.participant,
-            message=f'Your request to join the Daret "{
-                daret.name}" has been confirmed.'
+            message=(
+                "Your request to join the Daret {} has been confirmed."
+                .format(daret.name)
+            )
+
         )
 
         return Response({'success': True, 'message': 'Participant confirmed successfully'}, status=200)
