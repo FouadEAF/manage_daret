@@ -340,8 +340,8 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
                     user_source=user,
                     user_destination=daret.owner,
                     message=(
-                        f"{user.last_name} {
-                            user.first_name} has requested to join your Daret {daret.name}."
+                        "{} {} has requested to join your Daret {}."
+                        .format(user.last_name, user.first_name, daret.name)
                     )
                 )
 
