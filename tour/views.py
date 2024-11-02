@@ -269,8 +269,11 @@ class ManageConfirmVirementView(APIAccessMixin, APIView):
                 user_source=confirm_virement.partie_beneficiaire,
                 # Assuming the destination is the one who sent money
                 user_destination=confirm_virement.partie_donnenant,
-                message=f'{
-                    confirm_virement.partie_beneficiaire.username} confirmed that they received money from you.'
+                message=(
+                    "{} confirmed that they received money from you."
+                    .format(confirm_virement.partie_beneficiaire.username)
+                )
+
             )
 
             return Response({'success': True, 'message': 'Confirm Virement updated successfully'}, status=200)
@@ -294,8 +297,11 @@ class ManageConfirmVirementView(APIAccessMixin, APIView):
             create_notification(
                 user_source=confirm_virement.partie_beneficiaire,
                 user_destination=confirm_virement.partie_donnenant,
-                message=f"{
-                    confirm_virement.partie_beneficiaire.username} denied that they received money from you."
+                message=(
+                    "{} denied that they received money from you."
+                    .format(confirm_virement.partie_beneficiaire.username)
+                )
+
             )
 
             # Delete the ConfirmVirement instance
