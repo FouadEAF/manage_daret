@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.utils.timezone import now
 from django.forms.models import model_to_dict
 
@@ -141,8 +142,7 @@ class LoginView(APIView):
 
 class LogoutView(APIAccessMixin, APIView):
     """ Logout from the server backend """
-    authentication_classes = [JWTAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -171,16 +171,17 @@ class AboutMeView(APIAccessMixin, APIView):
         if not request.user.is_authenticated:
             return Response({'success': False, 'message': 'User is not authenticated'}, status=401)
 
-        user = request.user
-        user_data = model_to_dict(user),
-        # user_data = {
-        #     'idUser': user.id,
-        #     'username': user.username,
-        #     'cnie': user.cnie,
+        # Try to get user data from cache
+        cache_key = f"user_{request.user.id}_data"
+        user_data = cache.get(cache_key)
 
-        #     'isActive': user.is_active,
+        if not user_data:
+            user = request.user
+            user_data = model_to_dict(user)
 
-        # }
+            # Cache user data for 5 minutes
+            cache.set(cache_key, user_data, timeout=300)
+
         return Response({'success': True, 'data': user_data}, status=200)
 
 
