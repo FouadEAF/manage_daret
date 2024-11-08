@@ -75,8 +75,10 @@ class ManageDaretView(APIAccessMixin, APIView):
                 create_notification(
                     user_source=user,  # The participant who is sending the request
                     user_destination=daret.owner,  # The owner of the Daret
-                    message=f'{user.username} has requested to join your Daret "{
-                        daret.name}".'
+                    message=(
+                        "{} {} has requested to join your Daret {}"
+                        .format(user.last_name, user.first_name, daret.name)
+                    )
                 )
 
                 return Response({'success': True, 'message': 'Your request to join the Daret has been sent. Awaiting owner confirmation.'}, status=200)
@@ -229,8 +231,11 @@ class ManageDaretView(APIAccessMixin, APIView):
                 create_notification(
                     user_source=request.user,
                     user_destination=participant.participant,
-                    message=f'The Daret "{daret.name}" has been updated by {
-                        request.user.username}.'
+                    message=(
+                        "The Daret {} has been updated by {} {}"
+                        .format(daret.name,  request.user.last_name, request.user.first_name)
+                    )
+
                 )
 
             return Response({'success': True, 'message': 'Daret updated successfully', 'data': DaretSerializer(updated_daret).data}, status=200)
@@ -339,8 +344,11 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
                 create_notification(
                     user_source=user,
                     user_destination=daret.owner,
-                    message=f'{user.last_name} {user.first_name} has requested to join your Daret "{
-                        daret.name}".'
+                    message=(
+                        "{} {} has requested to join your Daret {}"
+                        .format(user.last_name,  user.first_name, daret.name)
+                    )
+
                 )
 
                 return Response({'success': True, 'message': 'Join request sent, awaiting owner confirmation.'}, status=200)
@@ -374,8 +382,11 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
         create_notification(
             user_source=daret.owner,
             user_destination=participant_daret.participant,
-            message=f'Your request to join the Daret "{
-                daret.name}" has been confirmed.'
+            message=(
+                "Your request to join the Daret group {} has been confirmed."
+                .format(daret.name)
+            )
+
         )
 
         return Response({'success': True, 'message': 'Participant confirmed successfully'}, status=200)
@@ -401,8 +412,11 @@ class ManageJoinDaretView(APIAccessMixin, APIView):
         create_notification(
             user_source=daret.owner,
             user_destination=participant_daret.participant,
-            message=f'Your request was rejected to join the Daret "{
-                daret.name}".'
+            message=(
+                "Your request was rejected to join the Daret group {}."
+                .format(daret.name)
+            )
+
         )
 
         return Response({'success': True, 'message': 'Participant removed successfully'}, status=200)

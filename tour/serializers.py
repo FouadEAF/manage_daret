@@ -69,6 +69,8 @@ class ConfirmVirementSerializer(serializers.ModelSerializer):
     daret_name = serializers.CharField(
         source='tour.daret.name', read_only=True
     )
+    # Updated to snake_case
+    partie_beneficiaire_full_name = serializers.SerializerMethodField()
     partie_donnenant_full_name = serializers.SerializerMethodField()  # Updated to snake_case
 
     class Meta:
@@ -79,6 +81,7 @@ class ConfirmVirementSerializer(serializers.ModelSerializer):
             'tour',
             'partie_beneficiaire',
             'partie_beneficiaire_username',
+            'partie_beneficiaire_full_name',
             'partie_donnenant',
             'partie_donnenant_full_name',
             'is_send',
@@ -88,4 +91,10 @@ class ConfirmVirementSerializer(serializers.ModelSerializer):
         """Get full name for partie_donnenant."""
         if obj.partie_donnenant:
             return f"{obj.partie_donnenant.first_name} {obj.partie_donnenant.last_name}"
+        return None
+
+    def get_partie_beneficiaire_full_name(self, obj):
+        """Get full name for partie_beneficiaire."""
+        if obj.partie_beneficiaire:
+            return f"{obj.partie_beneficiaire.first_name} {obj.partie_beneficiaire.last_name}"
         return None
