@@ -247,3 +247,60 @@ class ManageConfirmVirementView(APIAccessMixin, APIView):
                 return Response({'success': False, 'message': 'Confirm Virement not found'}, status=404)
         except Exception as e:
             return Response({'success': False, 'message': str(e)}, status=500)
+
+
+class CardTourView(APIAccessMixin, APIView):
+    """Card Tour of Daret"""
+    authentication_classes = [JWTAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id_confirm_virement=None, *args, **kwargs):
+        """Retrieve one or multiple ConfirmVirement and Tour records."""
+        try:
+            user = request.user
+
+            # Step 1: Filter all Darets the user is participating in and are not done
+            darets = Daret.objects.filter(
+                joinDarets__participant=user, is_done=False)
+            serialized_daret = DaretSerializer(darets, many=True)
+
+            # Initialize list to hold combined data for each daret
+            combined_data = []
+            serialized_tours = []
+            daret_virement_data = []
+
+            # Step 2: Iterate through each Daret to fetch associated Tours and ConfirmVirement
+            for daret in darets:
+                # Fetch Tour instances related to this Daret
+                tour_instances = Tour.objects.filter(daret=daret)
+                serialized_tours = TourSerializer(
+                    tour_instances, many=True).data
+
+                # Initialize list for each Daret's virement data
+                daret_virement_data = []
+
+                for tour in tour_instances:
+                    # Fetch ConfirmVirement instances where the user is the donator for this Daret
+                    virement_instances = ConfirmVirement.objects.filter(
+                        tour=tour, partie_donnenant=user
+                    )
+                    serialized_virement = ConfirmVirementSerializer(
+                        virement_instances, many=True).data
+
+                    # Add each virement's data into daret_virement_data
+                    daret_virement_data.extend(serialized_virement)
+
+                # Collect data for each Daret, including tours and virements
+                combined_data.append({
+                    'tours': serialized_tours,
+                    'virements': daret_virement_data
+                })
+
+            # Step 3: Return the combined serialized data
+            return Response({
+                'success': True,
+                'data': combined_data,
+            }, status=200)
+
+        except Exception as e:
+            return Response({'success': False, 'message': str(e)}, status=500)
