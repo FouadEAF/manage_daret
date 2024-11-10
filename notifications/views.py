@@ -5,18 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.shortcuts import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
-
 from authentication.utils import APIAccessMixin
 from users.models import User
 from .models import Notification
 from .serializers import NotificationSerializer
-
-
-# class NotificationPagination(PageNumberPagination):
-#     page_size = 10  # You can adjust this value as needed
-#     page_size_query_param = 'page_size'
-#     max_page_size = 100
 
 
 class ManageNotificationView(APIAccessMixin, APIView):
@@ -62,10 +54,6 @@ class ManageNotificationView(APIAccessMixin, APIView):
         """Retrieve all notifications for the logged-in user"""
         user = request.user
         notifications = Notification.objects.filter(user_destination=user)
-
-        # paginator = NotificationPagination()
-        # paginated_notifications = paginator.paginate_queryset(
-        #     notifications, request)
 
         serializer = NotificationSerializer(notifications, many=True)
         unread_notifications = notifications.filter(is_read=False).count()
