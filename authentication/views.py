@@ -88,6 +88,23 @@ class LoginView(APIView):
             # Login the user
             auth_login(request, user)
 
+            # Cache key and timeout
+            cache_key = f"user_{user.id}_data"
+            cache_timeout = 60 * 15  # Cache user data for 15 minutes
+
+            # Define the user data to be cached
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'cnie': user.cnie,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_active': user.is_active,
+            }
+
+            # Set user data in cache
+            cache.set(cache_key, user_data, timeout=cache_timeout)
+
             # Generate tokens
             tokens = get_tokens_for_user(user)
 
@@ -98,14 +115,7 @@ class LoginView(APIView):
             # Serialize user data
             response_data = {
                 'success': True,
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'cnie': user.cnie,
-                    'first_name': user.first_name,
-                    'last_name': user.last_name,
-                    'isActive': user.is_active,
-                },
+                'user': user_data,
                 'refresh_token': tokens['refresh'],
                 'access_token': tokens['access'],
             }
