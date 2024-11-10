@@ -13,10 +13,10 @@ from .models import Notification
 from .serializers import NotificationSerializer
 
 
-class NotificationPagination(PageNumberPagination):
-    page_size = 10  # You can adjust this value as needed
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+# class NotificationPagination(PageNumberPagination):
+#     page_size = 10  # You can adjust this value as needed
+#     page_size_query_param = 'page_size'
+#     max_page_size = 100
 
 
 class ManageNotificationView(APIAccessMixin, APIView):
@@ -63,14 +63,14 @@ class ManageNotificationView(APIAccessMixin, APIView):
         user = request.user
         notifications = Notification.objects.filter(user_destination=user)
 
-        paginator = NotificationPagination()
-        paginated_notifications = paginator.paginate_queryset(
-            notifications, request)
+        # paginator = NotificationPagination()
+        # paginated_notifications = paginator.paginate_queryset(
+        #     notifications, request)
 
-        serializer = NotificationSerializer(paginated_notifications, many=True)
+        serializer = NotificationSerializer(notifications, many=True)
         unread_notifications = notifications.filter(is_read=False).count()
 
-        return paginator.get_paginated_response({'success': True, 'data': serializer.data, 'unread_count': unread_notifications})
+        return Response({'success': True, 'data': serializer.data, 'unread_count': unread_notifications})
 
     def put(self, request, notification_id, *args, **kwargs):
         """Mark a notification as read"""
