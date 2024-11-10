@@ -142,7 +142,8 @@ class LoginView(APIView):
 
 class LogoutView(APIAccessMixin, APIView):
     """ Logout from the server backend """
-    permission_classes = [AllowAny]
+    authentication_classes = [JWTAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
