@@ -93,14 +93,7 @@ class LoginView(APIView):
             cache_timeout = 60 * 15  # Cache user data for 15 minutes
 
             # Define the user data to be cached
-            user_data = {
-                'id': user.id,
-                'username': user.username,
-                'cnie': user.cnie,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'is_active': user.is_active,
-            }
+            user_data = model_to_dict(user)
 
             # Set user data in cache
             cache.set(cache_key, user_data, timeout=cache_timeout)
