@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -261,7 +262,9 @@ class CardTourView(APIAccessMixin, APIView):
 
             # Step 1: Filter all Darets the user is participating in and are not done
             darets = Daret.objects.filter(
-                joinDarets__participant=user, is_done=False)
+                Q(joinDarets__participant=user, joinDarets__is_confirmed=True), is_done=False)
+            # joinDarets__participant=user, is_done=False)
+
             serialized_daret = DaretSerializer(darets, many=True)
 
             # Initialize list to hold combined data for each daret
